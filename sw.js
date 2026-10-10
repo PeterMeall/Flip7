@@ -1,8 +1,8 @@
-const CACHE = 'flip7-v1';
+const CACHE = 'flip7-v2';
 const ASSETS = [
   '/Flip7/',
   '/Flip7/index.html',
-  'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600&family=Courier+Prime:wght@400;700&family=Lilita+One&display=swap'
+  'https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Inter:wght@400;500;600;700&family=Courier+Prime:wght@400;700&family=Lilita+One&display=swap'
 ];
 
 self.addEventListener('install', function(e) {
