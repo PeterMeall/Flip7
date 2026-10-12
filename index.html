@@ -1040,7 +1040,7 @@ function f7Render() {
   h.actionCards.forEach(function(id) {
     var chip  = document.createElement('div');
     var icon  = id==='sc'?'🛡':id==='freeze'?'🔒':'🔄';
-    var label = id==='sc'?'Tweede Kans':id==='freeze'?'Vast':'Flip Drie';
+    var label = id==='sc'?'Tweede Kans':id==='freeze'?'Vast':'Draai Drie';
     var cls   = id==='sc'?'chip-sc':id==='freeze'?'chip-freeze':'chip-flip3';
     chip.className = 'chip chip-action '+cls;
     chip.innerHTML = '<span class="chip-icon">'+icon+'</span><span class="chip-main">'+label+'</span>';
@@ -1082,7 +1082,7 @@ function f7Render() {
     document.getElementById('f7-turn-actions').classList.add('hidden');
     document.getElementById('f7-end-round').classList.add('hidden');
 
-    var aLabel = f7.pendingAction==='freeze' ? 'Vast' : 'Flip Drie';
+    var aLabel = f7.pendingAction==='freeze' ? 'Vast' : 'Draai Drie';
     document.getElementById('f7-target-title').textContent = 'Wie krijgt de '+aLabel+' kaart?';
     document.getElementById('f7-target-sub').textContent =
       f7.pendingAction==='freeze'
