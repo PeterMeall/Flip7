@@ -299,7 +299,7 @@ if ('serviceWorker' in navigator) {
   .chip-action .chip-icon  { font-size: 1.1rem; margin-bottom: 3px; }
   .chip-action .chip-main  { font-family: 'Lilita One', cursive; font-size: 0.48rem; text-transform: uppercase; letter-spacing: 0.04em; text-align: center; padding: 0 3px; line-height: 1.3; }
   .chip-freeze { background: linear-gradient(160deg, #2980b9, #1a5276); color: white; border-color: #1a5276; }
-  .chip-flip3  { background: linear-gradient(160deg, #f39c12, #d68910); color: #3d2b00; border-color: #b8860b; }
+  .chip-draai3  { background: linear-gradient(160deg, #f39c12, #d68910); color: #3d2b00; border-color: #b8860b; }
   .chip-sc     { background: linear-gradient(160deg, #e74c3c, #c0392b); color: white; border-color: #922b21; }
 
   .chip-mod {
@@ -376,7 +376,7 @@ if ('serviceWorker' in navigator) {
   .action-btn:active:not(:disabled) { opacity: 0.7; }
   .action-btn:disabled { opacity: 0.2; }
   .btn-freeze { border-color: #1e90ff; background: rgba(30,144,255,0.15); color: #74b9e8; }
-  .btn-flip3  { border-color: #a55eea; background: rgba(165,94,234,0.15); color: #c39bd3; }
+  .btn-draai3  { border-color: #a55eea; background: rgba(165,94,234,0.15); color: #c39bd3; }
   .btn-sc     { border-color: var(--green); background: rgba(46,213,115,0.12); color: #2ed573; }
   .btn-p2     { border-color: #00d2ff; background: rgba(0,210,255,0.1); color: #00d2ff; }
   .btn-p4     { border-color: #00d2ff; background: rgba(0,210,255,0.1); color: #00d2ff; }
@@ -629,7 +629,7 @@ for (var _n = 0; _n <= 12; _n++) { DECK_COUNTS[_n] = _n === 0 ? 1 : _n; }
 
 var ACTION_CARDS = [
   { id:'freeze', label:'Vast',          cls:'btn-freeze' },
-  { id:'flip3',  label:'Draai Drie',     cls:'btn-flip3'  },
+  { id:'draai3',  label:'Draai Drie',     cls:'btn-draai3'  },
   { id:'sc',     label:'Tweede Kans',   cls:'btn-sc'     },
 ];
 var MODIFIER_CARDS = [
@@ -654,7 +654,7 @@ var f7 = {
   viewIdx: 0,
   pendingAction: null,
   pendingGiver: null,
-  flip3ReturnToIdx: null,
+  draai3ReturnToIdx: null,
 };
 
 /* ── Pure helpers ── */
@@ -793,9 +793,9 @@ function f7StartRound(startIdx) {
   f7.hands = {};
   f7.pendingAction = null;
   f7.pendingGiver  = null;
-  f7.flip3ReturnToIdx = null;
+  f7.draai3ReturnToIdx = null;
   f7.players.forEach(function(p) {
-    f7.hands[p] = { numCards:[], actionCards:[], modCards:[], hasSC:false, status:'active', flip3Left:0 };
+    f7.hands[p] = { numCards:[], actionCards:[], modCards:[], hasSC:false, status:'active', draai3Left:0 };
   });
   f7.viewIdx = (startIdx !== undefined && startIdx >= 0) ? startIdx : 0;
   f7BuildSBHeader();
@@ -820,13 +820,13 @@ function f7DrawNum(val) {
       h.hasSC = false;
       var scIdx = h.actionCards.indexOf('sc');
       if (scIdx !== -1) h.actionCards.splice(scIdx, 1);
-      if (h.flip3Left > 0) { h.flip3Left--; }
-      if (h.flip3Left === 0) { f7Render(); f7NextPlayer(); return; }
+      if (h.draai3Left > 0) { h.draai3Left--; }
+      if (h.draai3Left === 0) { f7Render(); f7NextPlayer(); return; }
       f7Render(); return;
     }
     h.numCards.push(val);
     h.status = 'bust';
-    h.flip3Left = 0;
+    h.draai3Left = 0;
     f7Render(); return;
   }
 
@@ -834,16 +834,16 @@ function f7DrawNum(val) {
 
   if (handIsFlip7(h)) {
     h.status = 'flip7';
-    h.flip3Left = 0;
+    h.draai3Left = 0;
     f7.players.forEach(function(p) {
       if (f7.hands[p].status === 'active') f7.hands[p].status = 'round-ended';
     });
     f7Render(); return;
   }
 
-  if (f7.mode === 'card' && h.flip3Left > 0) {
-    h.flip3Left--;
-    if (h.flip3Left === 0) { f7Render(); f7NextPlayer(); return; }
+  if (f7.mode === 'card' && h.draai3Left > 0) {
+    h.draai3Left--;
+    if (h.draai3Left === 0) { f7Render(); f7NextPlayer(); return; }
     f7Render(); return;
   }
 
@@ -869,7 +869,7 @@ function f7DrawAction(id) {
     h.actionCards.push('sc');
     f7Render();
     if (f7.mode === 'card') f7NextPlayer();
-  } else if (id === 'freeze' || id === 'flip3') {
+  } else if (id === 'freeze' || id === 'draai3') {
     f7.pendingAction = id;
     f7.pendingGiver  = f7CurrentName();
     f7Render();
@@ -890,19 +890,19 @@ function f7PickTarget(targetName) {
     th.status = 'freeze';
     f7.viewIdx = f7.players.indexOf(giverName);
     f7SwitchToNextActive();
-  } else if (action === 'flip3') {
-    th.actionCards.push('flip3');
+  } else if (action === 'draai3') {
+    th.actionCards.push('draai3');
     if (targetName !== giverName) {
-      th.flip3Left = 3;
+      th.draai3Left = 3;
       var giverIdx  = f7.players.indexOf(giverName);
       var returnIdx = giverIdx;
       for (var i = 1; i <= f7.players.length; i++) {
         var ri = (giverIdx + i) % f7.players.length;
         if (f7.players[ri] !== targetName && handIsActive(f7.hands[f7.players[ri]])) { returnIdx = ri; break; }
       }
-      f7.flip3ReturnToIdx = returnIdx;
+      f7.draai3ReturnToIdx = returnIdx;
     } else {
-      th.flip3Left = 3;
+      th.draai3Left = 3;
     }
     f7.viewIdx = f7.players.indexOf(targetName);
     f7Render();
@@ -1041,7 +1041,7 @@ function f7Render() {
     var chip  = document.createElement('div');
     var icon  = id==='sc'?'🛡':id==='freeze'?'🔒':'🔄';
     var label = id==='sc'?'Tweede Kans':id==='freeze'?'Vast':'Draai Drie';
-    var cls   = id==='sc'?'chip-sc':id==='freeze'?'chip-freeze':'chip-flip3';
+    var cls   = id==='sc'?'chip-sc':id==='freeze'?'chip-freeze':'chip-draai3';
     chip.className = 'chip chip-action '+cls;
     chip.innerHTML = '<span class="chip-icon">'+icon+'</span><span class="chip-main">'+label+'</span>';
     handEl.appendChild(chip);
@@ -1133,7 +1133,7 @@ function f7Render() {
     var btn = document.createElement('button');
     btn.className = 'action-btn '+card.cls;
     btn.textContent = card.label;
-    if (f7.mode === 'round' && (card.id === 'freeze' || card.id === 'flip3' || card.id === 'sc')) btn.style.display = 'none';
+    if (f7.mode === 'round' && (card.id === 'freeze' || card.id === 'draai3' || card.id === 'sc')) btn.style.display = 'none';
     btn.disabled = isDone || (card.id==='sc' && h.hasSC);
     btn.addEventListener('click', (function(id){ return function(){ f7DrawAction(id); }; })(card.id));
     actionGrid.appendChild(btn);
@@ -1202,9 +1202,9 @@ function f7Render() {
 }
 
 function f7NextPlayer() {
-  if (f7.flip3ReturnToIdx !== null) {
-    var returnTo = f7.flip3ReturnToIdx;
-    f7.flip3ReturnToIdx = null;
+  if (f7.draai3ReturnToIdx !== null) {
+    var returnTo = f7.draai3ReturnToIdx;
+    f7.draai3ReturnToIdx = null;
     f7.viewIdx = returnTo;
     f7Render(); return;
   }
